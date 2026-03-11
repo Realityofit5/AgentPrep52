@@ -23,12 +23,12 @@
 //    }
 
 const FIREBASE_CONFIG = {
-  apiKey:            "PASTE_YOUR_apiKey_HERE",
-  authDomain:        "PASTE_YOUR_authDomain_HERE",
-  projectId:         "PASTE_YOUR_projectId_HERE",
-  storageBucket:     "PASTE_YOUR_storageBucket_HERE",
-  messagingSenderId: "PASTE_YOUR_messagingSenderId_HERE",
-  appId:             "PASTE_YOUR_appId_HERE"
+  apiKey:            "AIzaSyC3bfQ4wE5xJw34earRLqypMtrt_RGLnzs",
+  authDomain:        "agentprep52.firebaseapp.com",
+  projectId:         "agentprep52",
+  storageBucket:     "agentprep52.firebasestorage.app",
+  messagingSenderId: "506278101242",
+  appId:             "1:506278101242:web:64e51720312ad75d14c943"
 };
 
 // ── STEP 2: STRIPE ───────────────────────────────────────────
