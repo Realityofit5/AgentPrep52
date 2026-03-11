@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentPrep 52 — U.S. Real Estate Licensing Exam Prep</title>
+  <meta name="description" content="Pass your real estate exam. All 52 U.S. jurisdictions, AI tutor, 1,900+ practice questions. Free tier available.">
+  <meta name="theme-color" content="#C9A84C">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+  <!-- Firebase v9 Compat CDN — remove these 3 lines if not using Firebase yet -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- PWA Install Banner -->
+  <div id="pwa-install-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--bg-2,#1e2235);border-top:2px solid var(--gold,#C9A84C);padding:12px 16px;align-items:center;gap:12px;flex-wrap:wrap;">
+    <span style="font-size:1.3rem">📱</span>
+    <div style="flex:1;min-width:180px">
+      <div style="font-weight:600;font-size:0.9rem" id="pwa-banner-title">Install AgentPrep 52 on your phone</div>
+      <div style="font-size:0.78rem;color:var(--text-3,#9AA0B4)" id="pwa-banner-sub">Works offline · No app store needed · Free to install</div>
+    </div>
+    <button onclick="triggerPWAInstall()" style="background:var(--gold,#C9A84C);color:#000;border:none;padding:8px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.85rem" id="pwa-install-btn">Install</button>
+    <button onclick="dismissPWABanner()" style="background:transparent;border:none;color:var(--text-3,#9AA0B4);cursor:pointer;font-size:1.2rem;padding:4px 8px">✕</button>
+  </div>
+
+  <button class="hamburger" id="hamburger" aria-label="Open menu">☰</button>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        AgentPrep <span style="color:var(--gold)">52</span>
+        <span>50 States · DC · Puerto Rico · 2026</span>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Study</div>
+      <div class="nav-item active" data-view="dashboard"><span class="nav-icon">⬛</span>Dashboard</div>
+      <div class="nav-item" data-view="tracks"><span class="nav-icon">📚</span>Curriculum</div>
+      <div class="nav-item" data-view="chat"><span class="nav-icon">🤖</span>AI Tutor</div>
+
+      <div class="nav-section-label" style="margin-top:8px">Track</div>
+      <div class="nav-item" data-view="tracks" data-track="broker" id="nav-broker"><span class="nav-icon">🏠</span><span>Broker Exam</span></div>
+      <div class="nav-item" data-view="tracks" data-track="mlo" id="nav-mlo"><span class="nav-icon">🏦</span><span>MLO License</span></div>
+      <div class="nav-item" data-view="tracks" data-track="practical" id="nav-practical"><span class="nav-icon">💼</span><span>Practical Skills</span></div>
+
+      <div class="nav-section-label" style="margin-top:8px">Reference</div>
+      <div class="nav-item" data-view="states"><span class="nav-icon">🗺</span>52-State Matrix</div>
+      <div class="nav-item" data-view="compare"><span class="nav-icon">⚖</span>Compare States</div>
+
+      <div class="nav-section-label" style="margin-top:8px">Tools</div>
+      <div class="nav-item" data-view="progress"><span class="nav-icon">📊</span>Progress</div>
+      <div class="nav-item" data-view="roadmap"><span class="nav-icon">🗓</span>12-Week Roadmap</div>
+      <div class="nav-item" data-view="exam"><span class="nav-icon">📝</span><span>Exam Simulator</span></div>
+      <div class="nav-item" data-view="custom"><span class="nav-icon">🛠</span><span>Custom Exam</span></div>
+      <div class="nav-item" data-view="setup"><span class="nav-icon">⚙</span>Settings</div>
+      <div class="nav-item nav-upgrade" data-view="upgrade" id="nav-upgrade"><span class="nav-icon">⭐</span><span>Upgrade Plan</span></div>
+
+      <div class="nav-section-label" style="margin-top:8px">Legal</div>
+      <div class="nav-item" data-view="terms"><span class="nav-icon">📄</span><span id="nav-terms-label">Terms of Service</span></div>
+      <div class="nav-item" data-view="privacy"><span class="nav-icon">🔒</span><span id="nav-privacy-label">Privacy Policy</span></div>
+      <div class="nav-item" data-view="refund"><span class="nav-icon">💳</span><span id="nav-refund-label">Refund Policy</span></div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sf-actions">
+        <button class="sf-btn" onclick="startRandomQuiz()">⚡ Quick Quiz</button>
+        <button class="sf-btn" id="theme-toggle-sidebar" onclick="toggleTheme()">☀️ Theme</button>
+      </div>
+      <div>Sources: State DOL · DFI · ARELLO · NMLS · PSI · CFPB</div>
+      <div style="margin-top:4px;color:var(--text-3)">⚠️ For Educational Use Only. Content does not constitute legal advice. Laws change — always verify requirements with your state's official licensing board before making licensing decisions.</div>
+      <div style="margin-top:6px;color:var(--text-3)">© 2026 AgentPrep 52 · <span style="cursor:pointer;text-decoration:underline" onclick="navigate('terms')">Terms</span> · <span style="cursor:pointer;text-decoration:underline" onclick="navigate('privacy')">Privacy</span> · <span style="cursor:pointer;text-decoration:underline" onclick="navigate('refund')">Refunds</span></div>
+    </div>
+  </nav>
+
+  <main id="main-content">
+    <div style="display:flex;align-items:center;justify-content:center;height:60vh;color:var(--text-3);font-family:'DM Sans',sans-serif;">
+      Loading AgentPrep 52…
+    </div>
+  </main>
+
+</div>
+
+<!-- State Selector Modal -->
+<div class="modal-overlay" id="state-modal" onclick="if(event.target===this)closeStateModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title" id="modal-title-text">Select a State</span>
+      <button class="modal-close" onclick="closeStateModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input class="form-input" id="modal-search" style="width:100%;margin-bottom:16px" placeholder="Search states…" oninput="filterModalStates(this.value)">
+      <div class="modal-grid" id="modal-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
+
+<!-- Google Translate (hidden — triggered programmatically by setLanguage) -->
+<div id="google_translate_element" style="display:none"></div>
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'es,en',
+      autoDisplay: false,
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+    }, 'google_translate_element');
+  }
+  // Helper called by app.js to switch the Google Translate cookie/select
+  function triggerGoogleTranslate(langCode) {
+    // Wait for the widget iframe to be ready
+    var attempts = 0;
+    function trySet() {
+      var select = document.querySelector('.goog-te-combo');
+      if (select) {
+        select.value = langCode === 'es' ? 'es' : '';
+        select.dispatchEvent(new Event('change'));
+      } else if (attempts < 20) {
+        attempts++;
+        setTimeout(trySet, 150);
+      }
+    }
+    trySet();
+  }
+  // Restore translate bar visibility to avoid the top banner pushing layout
+  function hideGoogleBar() {
+    var bar = document.querySelector('.goog-te-banner-frame');
+    if (bar) bar.style.display = 'none';
+    document.body.style.top = '0px';
+  }
+
+  // Re-run translation on dynamically injected content (curriculum, quizzes, etc.)
+  // Google Translate only scans once on load — this forces it to re-process new DOM nodes.
+  function retranslateContent(el) {
+    if (!el) return;
+    var select = document.querySelector('.goog-te-combo');
+    if (!select || select.value !== 'es') return;
+    // Toggle notranslate briefly to force GT to re-walk new text nodes
+    el.classList.add('notranslate');
+    setTimeout(function() {
+      el.classList.remove('notranslate');
+      select.dispatchEvent(new Event('change'));
+      setTimeout(hideGoogleBar, 600);
+    }, 80);
+  }
+
+  // MutationObserver watches #main-content for any innerHTML change.
+  // Fires on every render() call automatically — curriculum, quiz, exam, chat, everything.
+  var _gtObserverTimer = null;
+  var _gtObserver = new MutationObserver(function() {
+    clearTimeout(_gtObserverTimer);
+    _gtObserverTimer = setTimeout(function() {
+      retranslateContent(document.getElementById('main-content'));
+    }, 120);
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var main = document.getElementById('main-content');
+    if (main) {
+      _gtObserver.observe(main, { childList: true, subtree: true });
+    }
+  });
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
+
+<!-- ═══════════════════════════════════════════════════════════
+     API KEYS CONFIG — edit firebase-config.js to add your keys
+     ═══════════════════════════════════════════════════════════ -->
+<script src="firebase-config.js"></script>
+
+<!-- States data + curricula -->
+<script src="states.js"></script>
+<script src="AK_curriculum.js"></script>
+<script src="AL_curriculum.js"></script>
+<script src="AR_curriculum.js"></script>
+<script src="AZ_curriculum.js"></script>
+<script src="CA_curriculum.js"></script>
+<script src="CO_curriculum.js"></script>
+<script src="CT_curriculum.js"></script>
+<script src="DC_curriculum.js"></script>
+<script src="DE_curriculum.js"></script>
+<script src="FL_curriculum.js"></script>
+<script src="GA_curriculum.js"></script>
+<script src="HI_curriculum.js"></script>
+<script src="IA_curriculum.js"></script>
+<script src="ID_curriculum.js"></script>
+<script src="IL_curriculum.js"></script>
+<script src="IN_curriculum.js"></script>
+<script src="KS_curriculum.js"></script>
+<script src="KY_curriculum.js"></script>
+<script src="LA_curriculum.js"></script>
+<script src="MA_curriculum.js"></script>
+<script src="MD_curriculum.js"></script>
+<script src="ME_curriculum.js"></script>
+<script src="MI_curriculum.js"></script>
+<script src="MN_curriculum.js"></script>
+<script src="MO_curriculum.js"></script>
+<script src="MS_curriculum.js"></script>
+<script src="MT_curriculum.js"></script>
+<script src="NC_curriculum.js"></script>
+<script src="ND_curriculum.js"></script>
+<script src="NE_curriculum.js"></script>
+<script src="NH_curriculum.js"></script>
+<script src="NJ_curriculum.js"></script>
+<script src="NM_curriculum.js"></script>
+<script src="NV_curriculum.js"></script>
+<script src="NY_curriculum.js"></script>
+<script src="OH_curriculum.js"></script>
+<script src="OK_curriculum.js"></script>
+<script src="OR_curriculum.js"></script>
+<script src="PA_curriculum.js"></script>
+<script src="PR_curriculum.js"></script>
+<script src="RI_curriculum.js"></script>
+<script src="SC_curriculum.js"></script>
+<script src="SD_curriculum.js"></script>
+<script src="TN_curriculum.js"></script>
+<script src="TX_curriculum.js"></script>
+<script src="UT_curriculum.js"></script>
+<script src="VA_curriculum.js"></script>
+<script src="VT_curriculum.js"></script>
+<script src="WA_curriculum.js"></script>
+<script src="WI_curriculum.js"></script>
+<script src="WV_curriculum.js"></script>
+<script src="WY_curriculum.js"></script>
+
+<!-- App Engine -->
+<script src="app.js"></script>
+
+<script>
+  const hamburger = document.getElementById('hamburger');
+  const sidebar   = document.getElementById('sidebar');
+  let sidebarOpen = false;
+
+  hamburger.addEventListener('click', () => {
+    sidebarOpen = !sidebarOpen;
+    sidebar.classList.toggle('open', sidebarOpen);
+    hamburger.textContent = sidebarOpen ? '✕' : '☰';
+  });
+
+  document.addEventListener('click', (e) => {
+    if (sidebarOpen && !sidebar.contains(e.target) && e.target !== hamburger) {
+      sidebarOpen = false;
+      sidebar.classList.remove('open');
+      hamburger.textContent = '☰';
+    }
+  });
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      if (window.innerWidth <= 900) {
+        sidebarOpen = false;
+        sidebar.classList.remove('open');
+        hamburger.textContent = '☰';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
